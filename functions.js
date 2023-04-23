@@ -29,7 +29,7 @@ const initApp = async () => {
   return result
 }
 const firewallRules = async () => {
-  const result = await execShellCommand('./scripts/fwlist.sh').catch(error => {
+  const result = await execShellCommand('./scripts/firewallrules.sh').catch(error => {
     return `error execute command : \n${error}`
   })
   return result

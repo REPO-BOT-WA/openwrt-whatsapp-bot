@@ -84,6 +84,10 @@ const deviceNetworkInterfaces = async () => {
   return interfaceData
 }
 
+function removeHTMLTags (str) {
+  if ((str === null) || (str === '')) { return false } else { str = str.toString() }
+  return str.replace(/(<([^>]+)>)/ig, '')
+}
 export {
   execShellCommand,
   pingColor,
@@ -91,5 +95,6 @@ export {
   generateMessage,
   openclashConfig,
   secondToHourAndMinute,
-  deviceNetworkInterfaces
+  deviceNetworkInterfaces,
+  removeHTMLTags
 }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { deviceNetworkInterfaces, execShellCommand, openclashConfig, pingColor, processPhoneNumber, secondToHourAndMinute } from './utils.js'
+import { deviceNetworkInterfaces, execShellCommand, openclashConfig, pingColor, processPhoneNumber, removeHTMLTags, secondToHourAndMinute } from './utils.js'
 
 // device
 const rebootDevice = async () => {
@@ -86,6 +86,25 @@ const openClashProxies = async () => {
       return error
     })
 }
+// Libernet
+const libernetInfo = async () => {
+  return await axios.post('http://192.168.1.1/libernet/api.php', {
+    action: 'get_dashboard_info'
+  }).then((res) => {
+    const data = res.data.data
+    const logs = removeHTMLTags(data.log)
+    const result = `
+➜ Status: ${data.status}
+➜ Logs:
+${logs}
+`
+    return result
+  })
+    .catch(error => {
+      console.log(`libernetInfo(): ${error}`)
+      return error
+    })
+}
 const myIp = async () => {
   return await axios.get('http://ip-api.com/json/')
     .then(response => {
@@ -127,5 +146,6 @@ export {
   firewallRules,
   deviceInterfaces,
   openClashInfo,
-  openClashProxies
+  openClashProxies,
+  libernetInfo
 }

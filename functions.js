@@ -34,7 +34,7 @@ const firewallRules = async () => {
   })
   return result
 }
-const networkInterfaces = async () => {
+const DeviceInterfaces = async () => {
   const result = await execShellCommand('./scripts/interface.sh')
     .then(data => {
       let result = ''
@@ -130,7 +130,7 @@ export {
   shutDownDevice,
   initApp,
   firewallRules,
-  networkInterfaces,
+  DeviceInterfaces,
   openClashInfo,
   openClashProxies
 }

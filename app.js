@@ -2,6 +2,7 @@ import { Boom } from '@hapi/boom'
 import { createRequire } from 'module'
 import { generateMessage } from './utils.js'
 import { firewallRules, initApp, myIp, openClashInfo, openClashProxies, rebootDevice, shutDownDevice, sidompul, sysInfo } from './functions.js'
+import { networkInterfaces } from 'os'
 const require = createRequire(import.meta.url)
 const {
   default: makeWASocket,
@@ -79,6 +80,8 @@ async function whatsappService () {
           reply = generateMessage(senderMessage, await initApp())
         } else if (senderMessage === '/firewall_rules') {
           reply = generateMessage(senderMessage, await firewallRules())
+        } else if (senderMessage === '/interfaces') {
+          reply = generateMessage(senderMessage, await networkInterfaces())
         } else if (senderMessage === '/openclash_info') {
           reply = generateMessage(senderMessage, await openClashInfo())
         } else if (senderMessage === '/openclash_proxies') {

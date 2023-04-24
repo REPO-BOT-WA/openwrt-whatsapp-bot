@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { execShellCommand, openclashConfig, pingColor, processPhoneNumber } from './utils.js'
+import { execShellCommand, openclashConfig, pingColor, processPhoneNumber, secondToHourAndMinute } from './utils.js'
 
 // device
 const rebootDevice = async () => {
@@ -32,6 +32,37 @@ const firewallRules = async () => {
   const result = await execShellCommand('./scripts/firewallrules.sh').catch(error => {
     return `error execute command : \n${error}`
   })
+  return result
+}
+const networkInterfaces = async () => {
+  const result = await execShellCommand('./scripts/interface.sh')
+    .then(data => {
+      let result = ''
+      Object.entries(data).forEach(([key, value]) => {
+        const interfaceName = key.split('.').at(-1)
+        let ipV4 = 'none'
+        let uptime = 0
+        if (value['ipv4-address']) {
+          ipV4 = `${value['ipv4-address'][0].address}/${value['ipv4-address'][0].mask}`
+        }
+        if (value.uptime) {
+          const { hour, minute, seconds } = secondToHourAndMinute(value.uptime)
+          uptime = `${hour}h ${minute}m ${seconds}s`
+        }
+        const message = `
+        ➜ Name: ${interfaceName}
+        ⏺ Active: ${value.up}
+        ⏺ Device: ${value.device}
+        ⏺ Protocol: ${value.proto}
+        ⏺ Ipv4 Address: ${ipV4}
+        ⏺ Uptime: ${uptime}`
+        result += message
+      })
+      return result
+    })
+    .catch(error => {
+      return `error execute command : \n${error}`
+    })
   return result
 }
 // open clash
@@ -68,7 +99,7 @@ const myIp = async () => {
       data.ip = data.query
       delete data.query
       delete data.status
-      Object.entries(data).forEach(([key, value]) => { result += `➜ nod${key} = ${value}\n` })
+      Object.entries(data).forEach(([key, value]) => { result += `➜ ${key} = ${value}\n` })
       return result
     })
     .catch(error => {
@@ -99,6 +130,7 @@ export {
   shutDownDevice,
   initApp,
   firewallRules,
+  networkInterfaces,
   openClashInfo,
   openClashProxies
 }

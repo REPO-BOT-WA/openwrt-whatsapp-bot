@@ -1,7 +1,7 @@
 import { exec } from 'child_process'
 
 const generateMessage = (command, body) => {
-  const message = `Command "_${command}_" Result:\n==================================\n${body}\n==================================`
+  const message = `Command " _${command}_ " Result:\n==================================\n${body}\n==================================`
   return message
 }
 
@@ -57,10 +57,20 @@ const openclashConfig = async () => {
     secret: secret.replace('\n', '')
   }
 }
+const secondToHourAndMinute = (second) => {
+  const totalMinutes = Math.floor(second / 60)
+
+  const seconds = second % 60
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  return { h: hours, m: minutes, s: seconds }
+}
 export {
   execShellCommand,
   pingColor,
   processPhoneNumber,
   generateMessage,
-  openclashConfig
+  openclashConfig,
+  secondToHourAndMinute
 }

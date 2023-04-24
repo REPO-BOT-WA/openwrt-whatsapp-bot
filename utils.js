@@ -66,11 +66,30 @@ const secondToHourAndMinute = (second) => {
 
   return { h: hours, m: minutes, s: seconds }
 }
+const deviceNetworkInterfacesName = async () => {
+  let interfacesName = await execShellCommand('ubus list network.interface.*')
+  interfacesName = interfacesName.split('\n')
+  return interfacesName.filter(elm => elm)
+}
+
+const deviceNetworkInterfaces = async () => {
+  const interfaceData = []
+  const interfacesName = await deviceNetworkInterfacesName()
+  for (const interfaceName of interfacesName) {
+    let detail = await execShellCommand(`ubus call ${interfaceName} status`)
+    detail = JSON.parse(detail)
+    detail.name = interfaceName
+    interfaceData.push(detail)
+  }
+  return interfaceData
+}
+
 export {
   execShellCommand,
   pingColor,
   processPhoneNumber,
   generateMessage,
   openclashConfig,
-  secondToHourAndMinute
+  secondToHourAndMinute,
+  deviceNetworkInterfaces
 }

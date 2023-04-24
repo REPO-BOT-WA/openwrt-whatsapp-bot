@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { execShellCommand, openclashConfig, pingColor, processPhoneNumber, secondToHourAndMinute } from './utils.js'
+import { deviceNetworkInterfaces, execShellCommand, openclashConfig, pingColor, processPhoneNumber, secondToHourAndMinute } from './utils.js'
 
 // device
 const rebootDevice = async () => {
@@ -34,36 +34,30 @@ const firewallRules = async () => {
   })
   return result
 }
-const DeviceInterfaces = async () => {
-  const result = await execShellCommand('./scripts/interface.sh')
-    .then(data => {
-      let result = ''
-      Object.entries(data).forEach(([key, value]) => {
-        const interfaceName = key.split('.').at(-1)
-        let ipV4 = 'none'
-        let uptime = 0
-        if (value['ipv4-address']) {
-          ipV4 = `${value['ipv4-address'][0].address}/${value['ipv4-address'][0].mask}`
-        }
-        if (value.uptime) {
-          const { hour, minute, seconds } = secondToHourAndMinute(value.uptime)
-          uptime = `${hour}h ${minute}m ${seconds}s`
-        }
-        const message = `
-        ➜ Name: ${interfaceName}
-        ⏺ Active: ${value.up}
-        ⏺ Device: ${value.device}
-        ⏺ Protocol: ${value.proto}
-        ⏺ Ipv4 Address: ${ipV4}
-        ⏺ Uptime: ${uptime}`
-        result += message
-      })
-      return result
-    })
-    .catch(error => {
-      return `error execute command : \n${error}`
-    })
-  return result
+const deviceInterfaces = async () => {
+  const interfaceData = await deviceNetworkInterfaces()
+  let message = ''
+  interfaceData.forEach(value => {
+    let ipV4 = 'none'
+    let uptime = 0
+    if (value['ipv4-address']) {
+      ipV4 = `${value['ipv4-address'][0].address}/${value['ipv4-address'][0].mask}`
+    }
+    if (value.uptime) {
+      console.log(value.uptime)
+      const { h, m, s } = secondToHourAndMinute(value.uptime)
+      uptime = `${h}h ${m}m ${s}s`
+    }
+    const result = `
+➜ Name: ${value.name}
+• Active: ${value.up}
+• Device: ${value.device}
+• Protocol: ${value.proto}
+• Ipv4 Address: ${ipV4}
+• Uptime: ${uptime}\n`
+    message += result
+  })
+  return message
 }
 // open clash
 const openClashInfo = async () => {
@@ -130,7 +124,7 @@ export {
   shutDownDevice,
   initApp,
   firewallRules,
-  DeviceInterfaces,
+  deviceInterfaces,
   openClashInfo,
   openClashProxies
 }

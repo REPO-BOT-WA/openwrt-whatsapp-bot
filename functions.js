@@ -39,7 +39,7 @@ const deviceInterfaces = async () => {
   let message = ''
   interfaceData.forEach(value => {
     const interfaceName = value.name.split('.')
-    const name = interfaceName.at(-1)
+    const name = interfaceName[2]
     let ipV4 = 'none'
     let uptime = 0
     if (value['ipv4-address']) {

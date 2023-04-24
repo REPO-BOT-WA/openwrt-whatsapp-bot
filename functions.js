@@ -94,8 +94,8 @@ const libernetInfo = async () => {
   const configs = await libernetConfigs()
   Object.entries(configs).forEach(([key, value]) => {
     configMessage += `
-• ${key}:
-- ${value}`
+  • ${key}:
+  - ${value}`
   })
   return await axios.post(LIBERNET_API_URL, {
     action: 'get_dashboard_info'

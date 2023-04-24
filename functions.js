@@ -39,14 +39,13 @@ const deviceInterfaces = async () => {
   let message = ''
   interfaceData.forEach(value => {
     const interfaceName = value.name.split('.')
-    const name = interfaceName[-1]
+    const name = interfaceName.at(-1)
     let ipV4 = 'none'
     let uptime = 0
     if (value['ipv4-address']) {
       ipV4 = `${value['ipv4-address'][0].address}/${value['ipv4-address'][0].mask}`
     }
     if (value.uptime) {
-      console.log(value.uptime)
       const { h, m, s } = secondToHourAndMinute(value.uptime)
       uptime = `${h}h ${m}m ${s}s`
     }

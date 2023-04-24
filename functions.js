@@ -38,6 +38,8 @@ const deviceInterfaces = async () => {
   const interfaceData = await deviceNetworkInterfaces()
   let message = ''
   interfaceData.forEach(value => {
+    const interfaceName = value.name.split('.')
+    const name = interfaceName[-1]
     let ipV4 = 'none'
     let uptime = 0
     if (value['ipv4-address']) {
@@ -49,7 +51,7 @@ const deviceInterfaces = async () => {
       uptime = `${h}h ${m}m ${s}s`
     }
     const result = `
-➜ Name: ${value.name}
+➜ Name: ${name}
 • Active: ${value.up}
 • Device: ${value.device}
 • Protocol: ${value.proto}

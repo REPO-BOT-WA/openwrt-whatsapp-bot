@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { deviceNetworkInterfaces, execShellCommand, openclashConfig, pingColor, processPhoneNumber, secondToHourAndMinute } from './utils.js'
+import { LibernetConnectionText, deviceNetworkInterfaces, execShellCommand, lanNetworkInfo, libernetConfigs, openclashNetworkInfo, pingColor, processPhoneNumber, removeHTMLTags, secondToHourAndMinute } from './utils.js'
 
 // device
 const rebootDevice = async () => {
@@ -68,7 +68,7 @@ const openClashInfo = async () => {
   return result
 }
 const openClashProxies = async () => {
-  const { ip, port, secret } = await openclashConfig()
+  const { ip, port, secret } = await openclashNetworkInfo()
   const API_URL = `http://${ip}:${port}/providers/proxies`
   const API_KEY = `Bearer ${secret}`
   return await axios.get(API_URL, { headers: { Authorization: API_KEY } })
@@ -83,6 +83,36 @@ const openClashProxies = async () => {
     })
     .catch(error => {
       console.log(`openClashProxies(): ${error}`)
+      return error
+    })
+}
+// Libernet
+const libernetInfo = async () => {
+  const { ip } = await lanNetworkInfo()
+  const LIBERNET_API_URL = `http://${ip}/libernet/api.php`
+  let configMessage = '➜ Configs:'
+  const configs = await libernetConfigs()
+  Object.entries(configs).forEach(([key, value]) => {
+    configMessage += `
+  • ${key}:
+  - ${value}`
+  })
+  return await axios.post(LIBERNET_API_URL, {
+    action: 'get_dashboard_info'
+  }).then((res) => {
+    const data = res.data.data
+    const logs = removeHTMLTags(data.log)
+    const status = LibernetConnectionText(data.status)
+    const result = `
+➜ Status: ${status}
+${configMessage}
+➜ Logs:
+${logs}
+`
+    return result
+  })
+    .catch(error => {
+      console.log(`libernetInfo(): ${error}`)
       return error
     })
 }
@@ -127,5 +157,6 @@ export {
   firewallRules,
   deviceInterfaces,
   openClashInfo,
-  openClashProxies
+  openClashProxies,
+  libernetInfo
 }
